@@ -1,0 +1,46 @@
+name: Check jobs for Robin
+
+on:
+  schedule:
+    # Once a day at 13:00 UTC (~7am Mountain). Adzuna's free tier is
+    # ~1,000 calls/month; this search uses 14 calls/run, so daily keeps
+    # monthly usage (~420) comfortably under that with room for manual
+    # test runs too. Don't lower this to every 6 hours without upgrading
+    # your Adzuna tier - see README.
+    - cron: "0 13 * * *"
+  workflow_dispatch: {}   # lets you trigger it manually from the Actions tab
+
+permissions:
+  contents: write   # needed so the workflow can commit the updated seen_jobs.json
+
+jobs:
+  check-jobs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run job check
+        env:
+          ADZUNA_APP_ID: ${{ secrets.ADZUNA_APP_ID }}
+          ADZUNA_APP_KEY: ${{ secrets.ADZUNA_APP_KEY }}
+          SMTP_EMAIL: ${{ secrets.SMTP_EMAIL }}
+          SMTP_APP_PASSWORD: ${{ secrets.SMTP_APP_PASSWORD }}
+          ALERT_TO_EMAIL: ${{ secrets.ALERT_TO_EMAIL }}
+        run: python job_alert.py
+
+      - name: Commit updated seen_jobs.json
+        run: |
+          git config user.name "job-alert-bot"
+          git config user.email "actions@github.com"
+          git add seen_jobs.json
+          git diff --cached --quiet || git commit -m "Update seen jobs [skip ci]"
+          git push
