@@ -29,7 +29,9 @@ TITLE_KEYWORDS = [
     "Executive Coordinator",
     "Workplace Experience Manager",
     "HR Office Manager",
-    "General Manager",
+    "Workplace Experience Manager",
+    "Receptionist",
+    "Front Desk Coordinator",,
 ]
 
 # ---- Where ----
