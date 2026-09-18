@@ -31,7 +31,7 @@ TITLE_KEYWORDS = [
     "HR Office Manager",
     "Workplace Experience Manager",
     "Receptionist",
-    "Front Desk Coordinator",,
+    "Front Desk Coordinator",
 ]
 
 # ---- Where ----
